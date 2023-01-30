@@ -65,6 +65,15 @@ function arrayEquals(a, b) {
     return true;
 }
 
+// reset values
+function startOver() {
+    gamePattern = [];
+    userClickedPattern = [];
+    level = 1;
+    sequenceChecker = 0;
+    started = false;
+}
+
 
 var buttonColors = ["red", "blue", "green", "yellow"];
 var gamePattern = [];
@@ -88,13 +97,16 @@ $(".btn").click(function () {
 
     // if user clicked a wrong color
     if (userClickedPattern[sequenceChecker] !== gamePattern[sequenceChecker]) {
-        $("h1").text("Gameover!");
+        $("h1").text("Gameover! Press A Key to Restart");
         playGameoverSound();
 
         $("body").addClass("game-over");
         setTimeout(function() {
             $("body").removeClass("game-over");
+            startOver();
         }, 200);
+
+        
     }
 
     sequenceChecker += 1;
@@ -112,7 +124,8 @@ $(".btn").click(function () {
 // detect user keypress
 $(document).keypress(function (e) { 
     // show sequence
-    if (started === false) {
+    console.log(started);
+    if (!started) {
         setTimeout(function() {
             nextSequence(level);
             started = true;
