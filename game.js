@@ -19,10 +19,10 @@ function generateGameSequence() {
 // function for next sequence
 function nextSequence(noOfSequence) {
     
-    for (let i = 0; i < noOfSequence; i++) {
+    for (var i = 0; i < noOfSequence; i++) {
         setTimeout(function() {
             generateGameSequence();
-        }, 1000 * i);
+        }, 700 * i);
     }
 
     $("h1").text("level " + level);
@@ -35,6 +35,12 @@ function playSound(src) {
     buttonAudio.play();
 }
 
+// function to play game over sound
+function playGameoverSound() {
+    var audio = new Audio("sounds/wrong.mp3");
+    audio.play();
+}
+
 // animate button press given a button
 function animatePress(currentButton) {
     currentButton.addClass("pressed");
@@ -44,6 +50,7 @@ function animatePress(currentButton) {
     }, 100);
 }
 
+// check if array elements are equal
 function arrayEquals(a, b) {
     if (a.length !== b.length) {
         return false;
@@ -58,10 +65,12 @@ function arrayEquals(a, b) {
     return true;
 }
 
+
 var buttonColors = ["red", "blue", "green", "yellow"];
 var gamePattern = [];
 var userClickedPattern = [];
 var level = 1;
+var sequenceChecker = 0;
 var started = false;
 
 // detect user click
@@ -69,26 +78,33 @@ $(".btn").click(function () {
     var userChosenButton = $(this);
     var userChosenColor = userChosenButton.attr("id");
     
-    playSound("sounds/" + userChosenColor + ".mp3")
+    
     userClickedPattern.push(userChosenColor);
     animatePress(userChosenButton);
 
     console.log(userClickedPattern);
     console.log(gamePattern);
+    console.log(sequenceChecker);
 
-    if (userClickedPattern.length > gamePattern.length) {
-        //GAMEOVER
+    // if user clicked a wrong color
+    if (userClickedPattern[sequenceChecker] !== gamePattern[sequenceChecker]) {
         $("h1").text("Gameover!");
+        playGameoverSound();
+
+        $("body").addClass("game-over");
+        setTimeout(function() {
+            $("body").removeClass("game-over");
+        }, 200);
     }
 
-    if (userClickedPattern.length === gamePattern.length && !arrayEquals(userClickedPattern, gamePattern)) {
-        //GAMEOVER
-        $("h1").text("Gameover!");
-    }
+    sequenceChecker += 1;
+    playSound("sounds/" + userChosenColor + ".mp3")  // play sound if correct
 
+    // reset checkers
     if (arrayEquals(userClickedPattern, gamePattern)) {
-        userClickedPattern = []
-        gamePattern = []
+        userClickedPattern = [];
+        gamePattern = [];
+        sequenceChecker = 0;
         setTimeout(()=>{nextSequence(level)}, 1000);
     }
 });
